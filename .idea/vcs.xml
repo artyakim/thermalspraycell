@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$/fanuc" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/fanuc/joint_state_publisher" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/fanuc_experimental" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/fanuc_experimental/realsense-ros" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/fmauch_universal_robot" vcs="Git" />
+  </component>
+</project>

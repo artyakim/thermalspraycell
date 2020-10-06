@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+ <include file="$(find fanuc_lrmate200id_moveit_config)/launch/moveit_planning_execution.launch" >
+ </include>
+ <include file="$(find realsense2_camera)/launch/rs_camera.launch" >
+ </include>
+</launch>
