@@ -1,0 +1,81 @@
+ROS commands
+
+To add the workspace to your ROS environment you need to source the generated setup file
+. ~/catkin_ws/devel/setup.bash
+
+Clion tutorial for ROS
+https://www.jetbrains.com/help/clion/ros-setup-tutorial.html#launch-files
+
+Git cheat sheet:
+
+
+SSH agent:
+eval "$(ssh-agent -s)" && ssh-add
+
+Добавляет удаленный репозиторий (пакет рос) в список репозиториев проекта
+git remote add fanuc https://github.com/ros-industrial/fanuc.git
+
+Добавляет содержимое ветки репозитория в директорию "fanuc" проекта одним коммитом
+git subtree add --prefix=fanuc/ fanuc indigo-devel --squash
+
+Обновляет содержимое 
+git subtree pull --prefix=forest/ forest master
+
+Такой же pipeline для fanuc_experimental
+git remote add fanuc_experimental https://github.com/ros-industrial/fanuc_experimental.git
+git subtree add --prefix=fanuc_experimental/ fanuc_experimental indigo-devel --squash
+
+
+
+Git Usefull commands:
+
+git update-index --assume-unchanged .gitignore
+git rm -r --cached client --dry-run
+$ git diff --name-only ветка1 ветка2
+$ git diff --name-status ветка1 ветка2
+git reflog --pretty=oneline --abbrev-commit
+git rebase -i HEAD~5
+
+Посмотреть все ветки
+git branch
+Создать новую ветку
+git branch slider
+Переключиться на ветку
+git checkout slider
+Убрать все изменения
+git reset --hard
+Посмотреть разницу
+git diff
+Запушить изменения
+git push origin is_state_valid
+Залить последние изменения
+git pull origin develop
+Замерджить изменения из develop в свою ветку. Сначала нужно перейти в ветку
+git merge develop
+Отменить commit
+git reset --soft HEAD~1
+Удалить branch
+git branch -D branch_name
+Reset файла
+git checkout filename
+Удалить untracked files
+git clean -d -f
+Получить права для gitlab
+sudo chown -R ${USER}:${USER} dev/rwc/
+Спрятать
+git stash
+Вытащить
+git stash apply
+git stash apply stash@{2}
+Подпулить в бранче
+git pull origin positioner_planner
+Запустить diffuse git mergetool --tool=diffuse
+This will cherry-pick the last commit from another_branch:
+git cherry-pick another_branch
+Cherry pick commit
+git cherry-pick -x bd0a225461075be4d30aa0a57cde0a9d99f7094f
+Добавить шорткаты
+git config --global alias.co checkout
+Отменить git add .git 
+git reset file_name
+
