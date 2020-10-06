@@ -1,2 +1,5 @@
-1. just do it
-end
+
+roslaunch fanuc_lrmate200id_moveit_config moveit_planning_execution.launch
+
+clion
+
