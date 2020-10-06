@@ -1,4 +1,4 @@
-# Object files
+#bject files
 *.slo
 *.lo
 *.o
@@ -34,3 +34,6 @@ CATKIN_IGNORE*
 # ROS MoveIt
 default_warehouse_mongo_db/
 /cmake-build-debug/
+cmake-build-debug/
+.idea/
+
