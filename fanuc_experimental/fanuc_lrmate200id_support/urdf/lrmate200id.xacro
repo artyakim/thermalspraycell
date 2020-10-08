@@ -3,10 +3,13 @@
   <xacro:include filename="$(find fanuc_lrmate200id_support)/urdf/lrmate200id_macro.xacro"/>
   <xacro:fanuc_lrmate200id prefix=""/>
     <!--Import the asus xtion macro -->
-     <xacro:include filename="$(find realsense2_description)/urdf/_d435.urdf.xacro"/> 
-  <xacro:sensor_d435 parent="base_link">
-    <origin xyz="0.2 0.2 0.2" rpy="0 0 0"/>
-  </xacro:sensor_d435>
+<!--     <xacro:include filename="$(find realsense2_description)/urdf/_d435.urdf.xacro"/> -->
+<!--  <xacro:sensor_d435 parent="base_link">-->
+<!--    <origin xyz="0.2 0.2 0.2" rpy="0 0 0"/>-->
+<!--  </xacro:sensor_d435>-->
+<!--  <xacro:spray_tool prefix="" connected_to="tool0"/>-->
+ <xacro:include filename="$(find fanuc_lrmate200id_support)/urdf/spray_tool.xacro"/>
+      <xacro:spray_tool prefix="" connected_to="tool0"/>
   <link name="world" />
   <joint name="world_joint" type="fixed">
     <parent link="world" />
