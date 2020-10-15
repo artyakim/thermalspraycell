@@ -1,31 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-  <xacro:macro name="spray_tool" params="prefix connected_to">
-    <!-- Create a fixed joint with a parameterized name. -->
-    <joint name="${prefix}spray_tool_joint" type="fixed">
-<!-- Copied from original data    <parent link="${connected_to}"/> -->
-      <parent link="${prefix}flange"/>
-      <child link="${prefix}spray_tool"/>
-      <origin rpy="${-pi/2} 0 ${pi}" xyz="0 0 0"/>
-    </joint>
-    <link name="${prefix}spray_tool">
-      <visual>
-        <geometry>
-          <mesh filename="file://$(find fanuc_lrmate200id_support)/meshes/lrmate200id/visual/spray_tool.stl" scale="0.001 0.001 0.001"/>
-        </geometry>
-      </visual>
-<!--      <collision>-->
-<!--        <geometry>-->
-<!--          <mesh filename="file://$(find fanuc_lrmate200id_support)/meshes/lrmate200id/visual/spray_tool.stl" scale="0.001 0.001 0.001"/>-->
-<!--        </geometry>-->
-<!--      </collision>-->
-    </link>
-    <joint name="${prefix}tcp_joint" type="fixed">
-      <origin xyz="-0.0758 0 0.2" rpy="0 0 0"/>
-      <parent link="${prefix}spray_tool"/>
-      <child link="${prefix}tcp"/>
-    </joint>
-    <link name="${prefix}tcp"/>
-
-  </xacro:macro>
+    <xacro:macro name="spray_tool" params="prefix connected_to">
+        <!-- Create a fixed joint with a parameterized name. -->
+        <joint name="${prefix}spray_tool_joint" type="fixed">
+            <!-- Copied from original data    <parent link="${connected_to}"/> -->
+            <parent link="${prefix}tool0"/>
+            <child link="${prefix}spray_tool"/>
+            <origin rpy="0 ${pi/2.0} ${pi/2}" xyz="0 0 0"/>
+        </joint>
+        <link name="${prefix}spray_tool">
+            <visual>
+                <geometry>
+                    <mesh filename="file://$(find fanuc_lrmate200id_support)/meshes/lrmate200id/visual/spray_tool.stl"
+                          scale="0.001 0.001 0.001"/>
+                </geometry>
+            </visual>
+            <collision>
+                <geometry>
+                    <mesh filename="file://$(find fanuc_lrmate200id_support)/meshes/lrmate200id/visual/spray_tool.stl"
+                          scale="0.001 0.001 0.001"/>
+                </geometry>
+            </collision>
+        </link>
+    </xacro:macro>
 </robot>
