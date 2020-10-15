@@ -224,7 +224,7 @@ int main(int argc, char **argv) {
     group.setPlanningTime(20.5);
     group.setPlannerId("RRTConnectkConfigDefault");
     //group.setPlannerId("PTP");
-    group.setEndEffectorLink("tool0");
+    group.setEndEffectorLink("tcp");
     const:: robot_state::JointModelGroup *joint_model_group = group.getCurrentState()->getJointModelGroup("manipulator");
     moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
 
@@ -296,7 +296,7 @@ int main(int argc, char **argv) {
     box_tf.setRotation(q);
     box_tf.getBasis().setRPY(1.57,0.0,0.0); /// commented
     box_tf.getOrigin().setX(0.3737);
-    box_tf.getOrigin().setY(-0.196672);
+    box_tf.getOrigin().setY(-0.396672);
     box_tf.getOrigin().setZ(0.273011);
     addPrimitiveBox (planning_scene_interface,
                           group,
