@@ -3,7 +3,6 @@
     <xacro:macro name="spray_tool" params="prefix connected_to">
         <!-- Create a fixed joint with a parameterized name. -->
         <joint name="${prefix}spray_tool_joint" type="fixed">
-            <!-- Copied from original data    <parent link="${connected_to}"/> -->
             <parent link="${prefix}tool0"/>
             <child link="${prefix}spray_tool"/>
             <origin rpy="0 ${pi/2.0} ${pi/2}" xyz="0 0 0"/>
