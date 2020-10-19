@@ -4,14 +4,23 @@
     <xacro:fanuc_lrmate200id prefix=""/>
     <xacro:include filename="$(find realsense2_description)/urdf/_d435.urdf.xacro"/>
     <xacro:sensor_d435 parent="base_link">
-        <origin xyz="0.15 0.0 0.2" rpy="0 0 0"/>
+        <origin xyz="0.15 0.0 0.1" rpy="0 0 0"/>
     </xacro:sensor_d435>
-    <xacro:include filename="$(find fanuc_lrmate200id_support)/urdf/spray_tool.xacro"/>
-    <xacro:spray_tool prefix="" connected_to=""/>
+    <xacro:include filename="$(find fanuc_lrmate200id_support)/urdf/igla_tool.xacro"/>
+    <xacro:igla_tool prefix="" connected_to=""/>
+
+    <xacro:include filename="$(find fanuc_lrmate200id_support)/urdf/table.xacro"/>
+    <xacro:table prefix="" connected_to=""/>
+
+    <xacro:include filename="$(find fanuc_lrmate200id_support)/urdf/stand_for_camera.xacro"/>
+    <xacro:stand_for_camera prefix="" connected_to=""/>
+
     <link name="tcp"/>
     <joint name="tcp_joint" type="fixed">
-        <origin xyz="-0.0758 0 0.2" rpy="0 0 ${pi}"/>
-        <parent link="spray_tool"/>
+<!--        <origin xyz="-0.0758 0 0.2" rpy="0 0 ${pi}"/>-->
+<!--        <parent link="spray_tool"/>-->
+        <origin xyz="0 0 0.110" rpy="0 0 ${-pi/4}"/>
+        <parent link="igla_tool"/>
         <child link="tcp"/>
     </joint>
     <link name="world"/>

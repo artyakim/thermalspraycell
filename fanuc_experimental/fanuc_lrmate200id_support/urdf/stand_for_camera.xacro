@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+    <xacro:macro name="stand_for_camera" params="prefix connected_to">
+        <!-- Create a fixed joint with a parameterized name. -->
+        <link name="${prefix}setup_camera">
+            <visual>
+                <geometry>
+                    <mesh filename="file://$(find fanuc_lrmate200id_support)/meshes/lrmate200id/visual/setup_for_camera.stl"
+                          scale="0.001 0.001 0.001"/>
+                </geometry>
+            </visual>
+            <collision>
+                <geometry>
+                    <mesh filename="file://$(find fanuc_lrmate200id_support)/meshes/lrmate200id/visual/setup_for_camera.stl"
+                          scale="0.001 0.001 0.001"/>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="${prefix}setup_joint" type="fixed">
+            <parent link="${prefix}base_link"/>
+            <child link="${prefix}setup_camera"/>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+        </joint>
+    </xacro:macro>
+</robot>
