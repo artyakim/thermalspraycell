@@ -3,57 +3,25 @@
 //
 
 #include "ros/ros.h"
-#include "EdoControlSim.h"
 #include <geometry_msgs/Pose.h>
-#include <tf2/LinearMath/Quaternion.h>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include "tf/transform_datatypes.h"
 #include <tf/transform_listener.h>
-#include <tf/transform_broadcaster.h>
 #include "std_msgs/String.h"
-#include <moveit/robot_model_loader/robot_model_loader.h>
 #include <moveit/robot_model/robot_model.h>
 #include <moveit/robot_state/robot_state.h>
 #include <math.h>
-#include "sensor_msgs/JointState.h"
-#include <tf_conversions/tf_eigen.h>
-#include <trac_ik/trac_ik.hpp>
-
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
-
-#include <moveit_msgs/DisplayRobotState.h>
 #include <moveit_msgs/DisplayTrajectory.h>
-
-#include <moveit_msgs/AttachedCollisionObject.h>
 #include <moveit_msgs/CollisionObject.h>
-
 #include <moveit_visual_tools/moveit_visual_tools.h>
-#include <pilz_control/pilz_joint_trajectory_controller.h>
-#include <pilz_msgs/GetMotionSequenceRequest.h>
-#define DEG_TO_RAD (M_PI/180.0)
-
-#include <moveit/robot_state/conversions.h>
-#include <moveit/collision_detection/collision_tools.h>
-#include <tf2_eigen/tf2_eigen.h>
 #include <moveit/move_group/capability_names.h>
-#include <moveit/planning_pipeline/planning_pipeline.h>
-#include <moveit/robot_state/robot_state.h>
-#include <moveit_msgs/DisplayTrajectory.h>
 #include <moveit/trajectory_processing/iterative_time_parameterization.h>
 #include <moveit/trajectory_processing/time_optimal_trajectory_generation.h>
-#include <math.h>
-#include <moveit/move_group_interface/move_group_interface.h>
-#include <moveit/planning_scene_interface/planning_scene_interface.h>
-
-#include <moveit_msgs/DisplayRobotState.h>
-#include <moveit_msgs/DisplayTrajectory.h>
 #include <geometric_shapes/mesh_operations.h>
-#include <moveit_msgs/AttachedCollisionObject.h>
-#include <moveit_msgs/CollisionObject.h>
-
-#include <moveit_visual_tools/moveit_visual_tools.h>
 #include <geometric_shapes/shape_operations.h>
+#define DEG_TO_RAD (M_PI/180.0)
+
 
 
 std::vector<geometry_msgs::Pose> createWaypoints (geometry_msgs::Pose primitive, double dim_a, double dim_b)
@@ -204,8 +172,6 @@ std::vector<geometry_msgs::Pose> InterWayPoints (std::vector<geometry_msgs::Pose
 
 
 int main(int argc, char **argv) {
-    
-    //moveit::planning_interface::MoveGroupInterface *group;
 
 
     ros::init(argc, argv, "ur5_control");
@@ -220,15 +186,6 @@ int main(int argc, char **argv) {
 	tf::Vector3 vec(0,0,0);
 	object_transform.setOrigin(vec);
 
-	if (n.ok()) {
-
-		ROS_INFO("Waiting for transform....");
-	}
-	if(listener_for_tf.waitForTransform("base_link","object_pose", ros::Time(), ros::Duration(10.0)))
-	{
-		listener_for_tf.lookupTransform("base_link", "object_pose", ros::Time(0), object_transform);
-		ros::spinOnce();
-	}
     ros::AsyncSpinner spinner(2);
     spinner.start();
 
@@ -237,7 +194,6 @@ int main(int argc, char **argv) {
     moveit::planning_interface::MoveGroupInterface group("manipulator");
     group.setPlanningTime(20.5);
     group.setPlannerId("RRTConnectkConfigDefault");
-    //group.setPlannerId("PTP");
     group.setEndEffectorLink("tcp");
     const:: robot_state::JointModelGroup *joint_model_group = group.getCurrentState()->getJointModelGroup("manipulator");
     moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
@@ -259,21 +215,27 @@ int main(int argc, char **argv) {
     std::copy(group.getJointModelGroupNames().begin(), group.getJointModelGroupNames().end(),
               std::ostream_iterator<std::string>(std::cout, ", "));
 
-    visual_tools.prompt("Press NEXT to start ");
+    visual_tools.prompt("Press NEXT to start and load transform ");
+
+	if (n.ok()) {
+
+		ROS_INFO("Waiting for transform....");
+	}
+	if(listener_for_tf.waitForTransform("base_link","object_pose", ros::Time(), ros::Duration(10.0)))
+	{
+		listener_for_tf.lookupTransform("base_link", "object_pose", ros::Time(0), object_transform);
+		ros::spinOnce();
+	}
 
     group.setStartStateToCurrentState();
     group.setMaxVelocityScalingFactor(0.9);
     moveit::planning_interface::MoveGroupInterface::Plan my_plan;
-
-    //bool success = (group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
 
     moveit::core::RobotStatePtr current_state = group.getCurrentState();
     std::vector<double> joint_group_positions;
     current_state->copyJointGroupPositions(joint_model_group, joint_group_positions);
 
     geometry_msgs::Pose current_pose;
-//    current_pose.position = group.getCurrentPose().pose.position;
-//    current_pose.orientation = group.getCurrentPose().pose.orientation;
 /////////////////////////////////////////////////////////////////////////////////////////////
 
     // Cartesian Paths
@@ -289,7 +251,6 @@ int main(int argc, char **argv) {
 //    //Add primitive object for process
     moveit_msgs::CollisionObject collision_object;
     collision_object.header.frame_id = group.getPlanningFrame();
-//    collision_object.id = "box1";
     shape_msgs::SolidPrimitive primitive;
     primitive.type = primitive.BOX;
 
@@ -303,21 +264,6 @@ int main(int argc, char **argv) {
     box_tf.setRotation(object_transform.getRotation());
     box_tf.setOrigin(object_transform.getOrigin());
 
-//    tf::Quaternion q;
-//    q.setX(0.373491);
-//    q.setY(0.615548);
-//    q.setZ(0.603583);
-//    q.setW(0.342479);
-//    box_tf.setRotation(q);
-//    box_tf.getBasis().setRPY(1.57,0,1.57); /// commented
-//    box_tf.getOrigin().setX(0.4737);
-//    box_tf.getOrigin().setY(-0.196672);
-//    box_tf.getOrigin().setZ(0.00273011);
-//    addPrimitiveBox (planning_scene_interface,
-//                          group,
-//                          "box1",
-//                          box_size,
-//                          box_tf);
 
 	Eigen::Vector3d vectorScale(1, 1, 1);
 	shapes::Mesh* meshObject = shapes::createMeshFromResource("file:///home/artemyakimchuk/Desktop/Complex_part_new.stl",vectorScale);
@@ -337,87 +283,14 @@ int main(int argc, char **argv) {
 	planning_scene_interface.addCollisionObjects(collision_objects);
 
 	visual_tools.publishAxisLabeled(box_pose, "object", rvt::SMALL);
-//    //Add collision object to the world
-//    ROS_INFO_NAMED("tutorial", "Add an object into the world");
-//    planning_scene_interface.addCollisionObjects(collision_objects);
+    //Add collision object to the world
+
     visual_tools.publishText(text_pose, "Add object", rvt::WHITE, rvt::XLARGE);
     visual_tools.trigger();
 
-
-    visual_tools.prompt("Press NEXT to get the ENVIRONMENT");
-    //Add floor as a primitive object to avoid collision
-    moveit_msgs::CollisionObject collision_object1, wall_one, wall_two;
-    collision_object1.header.frame_id = group.getPlanningFrame();
-    wall_one.header.frame_id = group.getPlanningFrame();
-    wall_two.header.frame_id = group.getPlanningFrame();
-
-    collision_object1.id = "floorPrimitive";
-    wall_one.id = "wallonePrimitive";
-    wall_two.id = "walltwoPrimitive";
-
-    shape_msgs::SolidPrimitive primitive1, wall1_primitive, wall2_primitive;
-    primitive1.type = primitive1.BOX;
-    wall1_primitive.type = primitive1.BOX;
-    wall2_primitive.type = primitive1.BOX;
-
-    primitive1.dimensions.resize(3);
-    primitive1.dimensions[0] = 2;
-    primitive1.dimensions[1] = 0.01;
-    primitive1.dimensions[2] = 2;
-
-    wall1_primitive.dimensions.resize(3);
-    wall1_primitive.dimensions[0] = 2;
-    wall1_primitive.dimensions[1] = 2;
-    wall1_primitive.dimensions[2] = 0.01;
-
-    wall2_primitive.dimensions.resize(3);
-    wall2_primitive.dimensions[0] = 2;
-    wall2_primitive.dimensions[1] = 2;
-    wall2_primitive.dimensions[2] = 0.01;
-
-    //Param of the floorPrimitive relative to the frame id
-    tf::Transform box_rot1, wall1_rot, wall2_rot;
-    box_rot1.getBasis().setRPY(M_PI/2,0,0);
-    wall1_rot.getBasis().setRPY(M_PI/2,0,0);
-    wall2_rot.getBasis().setRPY(M_PI/2,0,0);
-
-    geometry_msgs::Pose box_pose1, wall1_pose, wall2_pose;
-    tf::poseTFToMsg(box_rot1, box_pose1);
-    tf::poseTFToMsg(wall1_rot, wall1_pose);
-    tf::poseTFToMsg(wall2_rot, wall2_pose);
-    box_pose1.position.x = 0;
-    box_pose1.position.y = 0;
-    box_pose1.position.z = -0.01;
-
-    wall1_pose.position.x = 0;
-    wall1_pose.position.y = -0.45;
-    wall1_pose.position.z = 1;
-
-    wall2_pose.position.x = 0;
-    wall2_pose.position.y = 0.45;
-    wall2_pose.position.z = 1;
-
-
-    //Add floor to the RViz
-    collision_object1.primitives.push_back(primitive1);
-    //collision_object1.primitives.push_back(wall1_primitive);
-    //collision_object1.primitives.push_back(wall2_primitive);
-
-    collision_object1.primitive_poses.push_back(box_pose1);
-    //collision_object1.primitive_poses.push_back(wall1_pose);
-    //collision_object1.primitive_poses.push_back(wall2_pose);
-
-    collision_object1.operation = collision_object.ADD;
-    std::vector<moveit_msgs::CollisionObject> collision_objects1;
-    collision_objects1.push_back(collision_object1);
-    //Add collision object to the world
-    ROS_INFO_NAMED("tutorial", "Add an object into the world");
-    planning_scene_interface.addCollisionObjects(collision_objects1);
-    visual_tools.publishText(text_pose, "Add object", rvt::WHITE, rvt::XLARGE);
     visual_tools.prompt("Press NEXT to plan to HOME position");
 
 
-    //joint_group_positions[0]= - (90*DEG_TO_RAD + atan2(box_tf.getOrigin().getX(), box_tf.getOrigin().getY()));
     joint_group_positions[0]=5*DEG_TO_RAD;
     joint_group_positions[1]=5*DEG_TO_RAD;
     joint_group_positions[2]=5*DEG_TO_RAD;
@@ -441,85 +314,11 @@ int main(int argc, char **argv) {
     ROS_INFO_NAMED("tutorial", "Visualizing plan 2 (joint space goal) %s", success ? "" : "FAILED");
     visual_tools.prompt("Press NEXT to MOVE to CLOSER position");
     group.move();
-/*
-
-//    //Add floor as a primitive object to avoid collision
-//    moveit_msgs::CollisionObject collision_object1, wall_one, wall_two;
-//    collision_object1.header.frame_id = group.getPlanningFrame();
-//    wall_one.header.frame_id = group.getPlanningFrame();
-//    wall_two.header.frame_id = group.getPlanningFrame();
-//
-//    collision_object1.id = "floorPrimitive";
-//    wall_one.id = "wallonePrimitive";
-//    wall_two.id = "walltwoPrimitive";
-//
-//    shape_msgs::SolidPrimitive primitive1, wall1_primitive, wall2_primitive;
-//    primitive1.type = primitive1.BOX;
-//    wall1_primitive.type = primitive1.BOX;
-//    wall2_primitive.type = primitive1.BOX;
-//
-//    primitive1.dimensions.resize(3);
-//    primitive1.dimensions[0] = 2;
-//    primitive1.dimensions[1] = 0.01;
-//    primitive1.dimensions[2] = 2;
-//
-//    wall1_primitive.dimensions.resize(3);
-//    wall1_primitive.dimensions[0] = 2;
-//    wall1_primitive.dimensions[1] = 2;
-//    wall1_primitive.dimensions[2] = 0.01;
-//
-//    wall2_primitive.dimensions.resize(3);
-//    wall2_primitive.dimensions[0] = 2;
-//    wall2_primitive.dimensions[1] = 2;
-//    wall2_primitive.dimensions[2] = 0.01;
-//
-//    //Param of the floorPrimitive relative to the frame id
-//    tf::Transform box_rot1, wall1_rot, wall2_rot;
-//    box_rot1.getBasis().setRPY(M_PI/2,0,0);
-//    wall1_rot.getBasis().setRPY(M_PI/2,0,0);
-//    wall2_rot.getBasis().setRPY(M_PI/2,0,0);
-//
-//    geometry_msgs::Pose box_pose1, wall1_pose, wall2_pose;
-//    tf::poseTFToMsg(box_rot1, box_pose1);
-//    tf::poseTFToMsg(wall1_rot, wall1_pose);
-//    tf::poseTFToMsg(wall2_rot, wall2_pose);
-//    box_pose1.position.x = 0;
-//    box_pose1.position.y = 0;
-//    box_pose1.position.z = -0.01;
-//
-//    wall1_pose.position.x = 0;
-//    wall1_pose.position.y = -0.8;
-//    wall1_pose.position.z = 1;
-//
-//    wall2_pose.position.x = 0;
-//    wall2_pose.position.y = 0.8;
-//    wall2_pose.position.z = 1;
-//
-//
-//    //Add floor to the RViz
-//    collision_object1.primitives.push_back(primitive1);
-//    collision_object1.primitives.push_back(wall1_primitive);
-//    collision_object1.primitives.push_back(wall2_primitive);
-//
-//    collision_object1.primitive_poses.push_back(box_pose1);
-//    collision_object1.primitive_poses.push_back(wall1_pose);
-//    collision_object1.primitive_poses.push_back(wall2_pose);
-//
-//    collision_object1.operation = collision_object.ADD;
-//    std::vector<moveit_msgs::CollisionObject> collision_objects1;
-//    collision_objects1.push_back(collision_object1);
-//    //Add collision object to the world
-//    ROS_INFO_NAMED("tutorial", "Add an object into the world");
-//    planning_scene_interface.addCollisionObjects(collision_objects1);
-//    visual_tools.publishText(text_pose, "Add object", rvt::WHITE, rvt::XLARGE);
-*/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     visual_tools.trigger();
     visual_tools.prompt("Press to form Spraying TRAJECTORY");
 
-//    geometry_msgs::Pose box_pose;
-//    tf::poseTFToMsg(box_tf, box_pose);
 	tf::Transform translate_to_complex_obj_oY, translate_to_complex_obj_oX, obj_tf_final,translate_to_complex_obj_oZ;//Create tf to translate trajectory from box to complex object
 	///////////////////////////////////////////////////////////////ADD TF HERE
 
@@ -531,15 +330,11 @@ int main(int argc, char **argv) {
 	translate_to_complex_obj_oZ.getOrigin().setX(0.0525);
 	translate_to_complex_obj_oZ.getOrigin().setY(-0.0007);
 	translate_to_complex_obj_oZ.getOrigin().setZ(-0.112);
-	//translate_to_complex_obj.getOrigin().setZ(0.0525);
 	obj_tf_final = box_tf * translate_to_complex_obj_oY*translate_to_complex_obj_oX*translate_to_complex_obj_oZ;
 	tf::poseTFToMsg(obj_tf_final, box_pose);
 
     waypoints.clear();
     inter_waypoints.clear();
-
-    //waypoints = createWaypoints(box_pose, primitive.dimensions[2], primitive.dimensions[0]);
-
 
     waypoints = createWaypoints(box_pose, box_size.getY(), box_size.getX());
 
@@ -586,23 +381,7 @@ int main(int argc, char **argv) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//    visual_tools.trigger();
-//    visual_tools.prompt("Press NEXT to attach object to robot");
-//
-//    ROS_INFO_NAMED("tutorial", "Attach the object to the robot");
-//    group.attachObject(collision_object.id);
-//    visual_tools.publishText(text_pose, "Object attached to robot", rvt::WHITE, rvt::XLARGE);
-//    visual_tools.trigger();
-//    visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to once the collision object attaches to the "
-//                        "robot");
-//    ROS_INFO_NAMED("tutorial", "Detach the object from the robot");
-//    group.detachObject(collision_object.id);
-//    visual_tools.publishText(text_pose, "Object dettached from robot", rvt::WHITE, rvt::XLARGE);
-//    visual_tools.trigger();
-
 /* Wait for MoveGroup to recieve and process the attached collision object message */
-    visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to once the collision object detaches to the "
-                        "robot");
 
     ROS_INFO_NAMED("tutorial", "Remove the object from the world");
     std::vector<std::string> object_ids;
