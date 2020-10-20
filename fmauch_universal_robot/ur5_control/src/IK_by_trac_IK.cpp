@@ -173,7 +173,7 @@ std::vector<geometry_msgs::Pose> InterWayPoints (std::vector<geometry_msgs::Pose
 
 int main(int argc, char **argv) {
 
-
+    ROS_INFO_NAMED("tutorial", "trajectory execution node has started");
     ros::init(argc, argv, "ur5_control");
     ros::NodeHandle n("~");
     if (n.ok()) {

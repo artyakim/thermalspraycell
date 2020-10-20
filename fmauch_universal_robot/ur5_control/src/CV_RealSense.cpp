@@ -238,6 +238,8 @@ tf::StampedTransform FromEigenToStpTrans(Eigen::Matrix4d to_convert)
  		char** argv)
  {
    // Initialize ROS
+   ROS_INFO_NAMED("tutorial", "CV node has started");
+
    ros::init (argc, argv, "my_pcl_tutorial");
    ros::NodeHandle nh;
    static tf::TransformBroadcaster br;
@@ -288,7 +290,7 @@ tf::StampedTransform FromEigenToStpTrans(Eigen::Matrix4d to_convert)
 		 obj_trans.child_frame_id_ = "object_pose";
 		 br.sendTransform(obj_trans);
 		 // Spin
-
+		 //ros::spin();
 		 ros::spinOnce();
 		 loop_rate.sleep();
 	 }

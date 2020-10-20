@@ -56,10 +56,26 @@
     <arg name="moveit_warehouse_database_path" value="$(arg db_path)"/>
   </include>
 
+  <!--  realsense2_camera rs_camera.launch-->
+
+<!--  <include file="$(find realsense2_camera)/launch/rs_camera.launch">-->
+<!--  </include>-->
+<!--  <arg name="ply_path" type="abc" default="$(find fanuc_lrmate200id_support)/objects_for_cv/complexPart.ply" />-->
+<!--  <arg name="$(find fanuc_lrmate200id_support)/launch/load_lrmate200id.launch" />-->
+<!--  args="$(arg ply_path)"-->
+  <node pkg="ur5_control" type="CV_node" name="CV_RealSense" output="screen"  >
+    <param name="ply_path" type="string" value="$(find fanuc_lrmate200id_support)/objects_for_cv/complexPart.ply"/>
+  </node>
+
+<!--  /media/viktor/Shared Space/FanucRobocell/clion workspace/src/fanuc_experimental/realsense-ros/realsense2_camera/launch/rs_camera.launch-->
 <!--next node executes motion pipeline   -->
-  <arg name="robot_name" default="ur5" />
-  <node pkg="ur5_control" type="IK_test_node" name="IK_by_trac_IK" output="screen">
-        <param name="tf_prefix" type="string" value="$(arg robot_name)"/>
-   </node>
+
+
+<!--  <arg name="node_start_delay" default="3.0" />-->
+<!--  <arg name="robot_name" default="ur5" />-->
+<!--  <node pkg="ur5_control" type="IK_test_node" name="IK_by_trac_IK" output="screen">-->
+<!--&lt;!&ndash;  <node pkg="ur5_control" type="IK_test_node" name="IK_by_trac_IK" output="screen" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' ">&ndash;&gt;-->
+<!--&lt;!&ndash;        <param name="tf_prefix" type="string" value="$(arg robot_name)" />&ndash;&gt;-->
+<!--  </node>-->
 
 </launch>
