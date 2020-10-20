@@ -3,8 +3,8 @@ ROS commands
 To add the workspace to your ROS environment you need to source the generated setup file
 . ~/catkin_ws/devel/setup.bash
 
-Clion tutorial for ROS
-https://www.jetbrains.com/help/clion/ros-setup-tutorial.html#launch-files
+Launch files ROS wiki
+http://wiki.ros.org/roslaunch/XML
 
 Git cheat sheet:
 

@@ -85,8 +85,8 @@ Eigen::Matrix4d PCAlignment(PointCloudT::Ptr scene_rviz, PointCloudT::Ptr object
 	FeatureCloudT::Ptr scene_features (new FeatureCloudT);
 
 	// Define min and max for X, Y and Z
-	float minX = -0.1, minY = -0.1, minZ = -2.5;
-	float maxX = +0.1, maxY = +0.1, maxZ = +2.5;
+	float minX = -0.25, minY = -0.15, minZ = -0.5;
+	float maxX = +0.25, maxY = +0.15, maxZ = +0.6;
 
 	pcl::CropBox<PointNT> boxFilter;
 	boxFilter.setMin(Eigen::Vector4f(minX, minY, minZ, 1.0));
@@ -136,12 +136,12 @@ Eigen::Matrix4d PCAlignment(PointCloudT::Ptr scene_rviz, PointCloudT::Ptr object
 	align.setSourceFeatures (object_features);
 	align.setInputTarget (scene);
 	align.setTargetFeatures (scene_features);
-	align.setMaximumIterations (200000); // Number of RANSAC iterations
+	align.setMaximumIterations (300000); // Number of RANSAC iterations
 	align.setNumberOfSamples (3); // Number of points to sample for generating/prerejecting a pose
 	align.setCorrespondenceRandomness (20); // Number of nearest features to use
-	align.setSimilarityThreshold (0.8f);// Polygonal edge length similarity threshold
+	align.setSimilarityThreshold (0.9f);// Polygonal edge length similarity threshold
 	align.setMaxCorrespondenceDistance (1.5f * leaf); // Inlier threshold
-	align.setInlierFraction (0.25); // Required inlier fraction for accepting a pose hypothesis
+	align.setInlierFraction (0.3); // Required inlier fraction for accepting a pose hypothesis
 	{
 		pcl::ScopeTime t("Alignment");
 		align.align (*object_aligned);
@@ -159,12 +159,13 @@ Eigen::Matrix4d PCAlignment(PointCloudT::Ptr scene_rviz, PointCloudT::Ptr object
 		pcl::console::print_info ("t = < %0.3f, %0.3f, %0.3f >\n", transformation (0,3), transformation (1,3), transformation (2,3));
 		pcl::console::print_info ("\n");
 		pcl::console::print_info ("Inliers: %i/%i\n", align.getInliers ().size (), object->size ());
+		pcl::console::print_info ("Inliers Fraction: %i/%i\n", align.getInlierFraction(), object->size ());
 
-		// Show alignment
-//		 pcl::visualization::PCLVisualizer visu("Alignment");
-//		 visu.addPointCloud (scene, ColorHandlerT (scene, 0.0, 255.0, 255.0), "scene");
-//		 visu.addPointCloud (object_aligned, ColorHandlerT (object_aligned, 255.0, 255.0, 0.0), "object_aligned");
-//		 visu.spin ();
+		 //Show alignment
+		 pcl::visualization::PCLVisualizer visu("Alignment");
+		 visu.addPointCloud (scene, ColorHandlerT (scene, 0.0, 255.0, 255.0), "scene");
+		 visu.addPointCloud (object_aligned, ColorHandlerT (object_aligned, 255.0, 255.0, 0.0), "object_aligned");
+		 visu.spin ();
 	}
 	else
 	{
@@ -176,7 +177,7 @@ Eigen::Matrix4d PCAlignment(PointCloudT::Ptr scene_rviz, PointCloudT::Ptr object
 	Eigen::Matrix4d transformation_matrix = Eigen::Matrix4d::Identity ();
 
 	pcl::IterativeClosestPoint<PointNT, PointNT> icp;
-	icp.setMaximumIterations (50);
+	icp.setMaximumIterations (150);
 	icp.setTransformationEpsilon(1e-9);
 	icp.setMaxCorrespondenceDistance(0.005f);
 	icp.setInputSource (object_aligned);
@@ -190,10 +191,10 @@ Eigen::Matrix4d PCAlignment(PointCloudT::Ptr scene_rviz, PointCloudT::Ptr object
 		transformation_matrix = icp.getFinalTransformation ().cast<double>();
 		print4x4Matrix (transformation_matrix);
 		// Show alignment
-//		pcl::visualization::PCLVisualizer visu2("Alignment");
-//		visu2.addPointCloud (scene, ColorHandlerT (scene, 0.0, 255.0, 255.0), "scene");
-//		visu2.addPointCloud (object_aligned, ColorHandlerT (object_aligned, 255.0, 255.0, 0.0), "object_aligned");
-//		visu2.spin ();
+		pcl::visualization::PCLVisualizer visu2("Alignment");
+		visu2.addPointCloud (scene, ColorHandlerT (scene, 0.0, 255.0, 255.0), "scene");
+		visu2.addPointCloud (object_aligned, ColorHandlerT (object_aligned, 255.0, 255.0, 0.0), "object_aligned");
+		visu2.spin ();
 	}
 	else
 	{
@@ -201,7 +202,7 @@ Eigen::Matrix4d PCAlignment(PointCloudT::Ptr scene_rviz, PointCloudT::Ptr object
 		return error.setZero();
 	}
 
-	return  (transformation * transformation_matrix);
+	return  (transformation_matrix*transformation);
 }
 
 PointCloudT::Ptr cloud_from_sensor (new PointCloudT);
@@ -232,6 +233,7 @@ tf::StampedTransform FromEigenToStpTrans(Eigen::Matrix4d to_convert)
 
 
  int
+
  main (int argc,
  		char** argv)
  {

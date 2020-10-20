@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+    <xacro:macro name="igla_tool" params="prefix connected_to">
+        <!-- Create a fixed joint with a parameterized name. -->
+        <joint name="${prefix}igla_tool_joint" type="fixed">
+            <parent link="${prefix}tool0"/>
+            <child link="${prefix}igla_tool"/>
+            <origin rpy="0 0 ${pi/4}" xyz="0 0 0"/>
+        </joint>
+        <link name="${prefix}igla_tool">
+            <visual>
+                <geometry>
+                    <mesh filename="file://$(find fanuc_lrmate200id_support)/meshes/lrmate200id/visual/igla.stl"
+                          scale="0.001 0.001 0.001"/>
+                </geometry>
+            </visual>
+            <collision>
+                <geometry>
+                    <mesh filename="file://$(find fanuc_lrmate200id_support)/meshes/lrmate200id/visual/igla.stl"
+                          scale="0.001 0.001 0.001"/>
+                </geometry>
+            </collision>
+        </link>
+    </xacro:macro>
+</robot>
