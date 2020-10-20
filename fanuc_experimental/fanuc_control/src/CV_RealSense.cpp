@@ -51,10 +51,6 @@
 
 typedef pcl::PointXYZ PointT;
 
-//сделать глобальную переменную для входящего поинт клауда
-//передать его в мейн
-//входящий поинт клауд присвоить к cloud_icp
-//посмотреть на вывод
 ros::Publisher pub;
 
 typedef pcl::PointNormal PointNT;
@@ -243,7 +239,7 @@ tf::StampedTransform FromEigenToStpTrans(Eigen::Matrix4d to_convert)
    static tf::TransformBroadcaster br;
    std::string ply_path;
 
-   if (nh.getParam("/CV_RealSense/ply_path",ply_path))
+   if (nh.getParam("/cv_node/ply_path",ply_path))
    {
        ROS_INFO_NAMED("cv node", "Path to ply file: %s", ply_path.c_str());
    }

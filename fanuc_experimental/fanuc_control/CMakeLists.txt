@@ -33,10 +33,9 @@ catkin_package(
 include_directories( ${catkin_INCLUDE_DIRS} ${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
-## Declare a C++ library
-add_library(${PROJECT_NAME}
-		src/trajectory_node.cpp
-)
+
+add_library(${PROJECT_NAME}	src/trajectory_node.cpp)
+
 target_link_libraries(
 	${PROJECT_NAME}
 	${catkin_LIBRARIES}

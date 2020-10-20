@@ -264,7 +264,7 @@ int main(int argc, char **argv) {
 
     ros::NodeHandle nh;
     std::string stl_path;
-    if (nh.getParam("/IK_by_trac_IK/stl_path",stl_path))
+    if (nh.getParam("/trajectory_node/stl_path",stl_path))
     {
         ROS_INFO_NAMED("cv node", "Path to stl file: %s", stl_path.c_str());
     }
