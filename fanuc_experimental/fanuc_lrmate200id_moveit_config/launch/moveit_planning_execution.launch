@@ -47,11 +47,11 @@
 
   <include file="$(find realsense2_camera)/launch/rs_camera.launch">  </include>
 
-  <node pkg="ur5_control" type="CV_node" name="CV_RealSense" output="screen"  >
+  <node pkg="fanuc_control" type="fanuc_cv_node" name="CV_RealSense" output="screen"  >
     <param name="ply_path" type="string" value="$(find fanuc_lrmate200id_support)/objects_for_cv/complexPart.ply"/>
   </node>
 
-  <node pkg="ur5_control" type="IK_test_node" name="IK_by_trac_IK" output="screen">
+  <node pkg="fanuc_control" type="fanuc_trajectory_node" name="IK_by_trac_IK" output="screen">
     <param name="stl_path" type="string" value="$(find fanuc_lrmate200id_support)/objects_for_cv/demo_part.stl"/>
   </node>
 
