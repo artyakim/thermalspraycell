@@ -1,3 +1,10 @@
+Install realsense drivers
+https://github.com/IntelRealSense/realsense-ros
+
+PILZ robot manipulator module PRBT 6 in ROS
+sudo apt install ros-melodic-pilz-robots
+
+source ./devel/setup.bash
 
 roslaunch fanuc_lrmate200id_moveit_config moveit_planning_execution.launch
 

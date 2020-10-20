@@ -238,7 +238,7 @@ int main(int argc, char **argv) {
     group.setPlanningTime(20.5);
     group.setPlannerId("RRTConnectkConfigDefault");
     //group.setPlannerId("PTP");
-    group.setEndEffectorLink("tool0");
+    group.setEndEffectorLink("tcp");
     const:: robot_state::JointModelGroup *joint_model_group = group.getCurrentState()->getJointModelGroup("manipulator");
     moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
 
@@ -302,6 +302,7 @@ int main(int argc, char **argv) {
 
     box_tf.setRotation(object_transform.getRotation());
     box_tf.setOrigin(object_transform.getOrigin());
+
 //    tf::Quaternion q;
 //    q.setX(0.373491);
 //    q.setY(0.615548);
@@ -336,7 +337,6 @@ int main(int argc, char **argv) {
 	planning_scene_interface.addCollisionObjects(collision_objects);
 
 	visual_tools.publishAxisLabeled(box_pose, "object", rvt::SMALL);
-
 //    //Add collision object to the world
 //    ROS_INFO_NAMED("tutorial", "Add an object into the world");
 //    planning_scene_interface.addCollisionObjects(collision_objects);
