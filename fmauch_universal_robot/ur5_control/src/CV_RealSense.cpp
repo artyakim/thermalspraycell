@@ -232,23 +232,25 @@ tf::StampedTransform FromEigenToStpTrans(Eigen::Matrix4d to_convert)
  }
 
 
- int
-
- main (int argc,
+ int main (int argc,
  		char** argv)
  {
    // Initialize ROS
-   ROS_INFO_NAMED("tutorial", "CV node has started");
+   ROS_INFO_NAMED("cv node", "CV node has started");
 
    ros::init (argc, argv, "my_pcl_tutorial");
    ros::NodeHandle nh;
    static tf::TransformBroadcaster br;
+   std::string ply_path;
+
+   if (nh.getParam("/CV_RealSense/ply_path",ply_path))
+   {
+       ROS_INFO_NAMED("cv node", "Path to ply file: %s", ply_path.c_str());
+   }
 
    // Create a ROS publisher for the output point cloud
-
    ros::Subscriber sub = nh.subscribe<sensor_msgs::PointCloud2>("/camera/depth/color/points",10, cloud_get);
 	 PointCloudT::Ptr scene_rviz (new PointCloudT);
-
 
 // Point clouds
 	 PointCloudT::Ptr object (new PointCloudT);
@@ -259,26 +261,20 @@ tf::StampedTransform FromEigenToStpTrans(Eigen::Matrix4d to_convert)
 	 FeatureCloudT::Ptr object_features (new FeatureCloudT);
 	 FeatureCloudT::Ptr scene_features (new FeatureCloudT);
 
-	 // Get input object and scene
-	 if (argc != 2)
-	 {
-		 pcl::console::print_error ("Syntax is: %s object.pcd scene.pcd\n", argv[0]);
-		 return (1);
-	 }
 	 // Load object and scene
 	 pcl::console::print_highlight ("Loading point clouds...\n");
-	 if (pcl::io::loadPLYFile<PointNT> (argv[1], *object) < 0 )
+	 if (pcl::io::loadPLYFile<PointNT> (ply_path, *object) < 0 )
 	 {
 		 pcl::console::print_error ("Error loading object/scene file!\n");
 		 return (1);
 	 }
-
-
-	 ros::Rate loop_rate(10);
+// Be carefull: the rate was changed from 10
+	 ros::Rate loop_rate(1);
 	 while(ros::ok()) {
 		 while (cloud_from_sensor->empty()) {
 			 pcl::console::print_highlight("NO CLOUD HERE...\n");
 			 ros::spinOnce();
+             loop_rate.sleep();
 		 }
 		 scene_rviz = cloud_from_sensor;
 //////////////////////////////////////////////////////////////////////////////////////PC Processing
@@ -290,7 +286,7 @@ tf::StampedTransform FromEigenToStpTrans(Eigen::Matrix4d to_convert)
 		 obj_trans.child_frame_id_ = "object_pose";
 		 br.sendTransform(obj_trans);
 		 // Spin
-		 //ros::spin();
+//		 ros::spin();
 		 ros::spinOnce();
 		 loop_rate.sleep();
 	 }

@@ -177,8 +177,7 @@ int main(int argc, char **argv) {
     ros::init(argc, argv, "ur5_control");
     ros::NodeHandle n("~");
     if (n.ok()) {
-
-        ROS_INFO("hey");
+        ROS_INFO("ok status was received from n.ok() check");
     }
 
 	tf::StampedTransform object_transform;
@@ -264,9 +263,15 @@ int main(int argc, char **argv) {
     box_tf.setRotation(object_transform.getRotation());
     box_tf.setOrigin(object_transform.getOrigin());
 
-
+    ros::NodeHandle nh;
+    std::string stl_path;
+    if (nh.getParam("/IK_by_trac_IK/stl_path",stl_path))
+    {
+        ROS_INFO_NAMED("cv node", "Path to stl file: %s", stl_path.c_str());
+    }
 	Eigen::Vector3d vectorScale(1, 1, 1);
-	shapes::Mesh* meshObject = shapes::createMeshFromResource("file:///home/artemyakimchuk/Desktop/Complex_part_new.stl",vectorScale);
+    std::string stl_path_with_prefix = "file://" + stl_path;
+	shapes::Mesh* meshObject = shapes::createMeshFromResource(stl_path_with_prefix,vectorScale);
 	shape_msgs::Mesh mesh;
 	shapes::ShapeMsg meshMessage;
 	shapes::constructMsgFromShape(meshObject, meshMessage);

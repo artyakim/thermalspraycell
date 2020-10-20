@@ -1,12 +1,4 @@
 <launch>
-  <!-- The planning and execution components of MoveIt! configured to run -->
-  <!-- using the ROS-Industrial interface. -->
- 
-  <!-- Non-standard joint names:
-       - Create a file [robot_moveit_config]/config/joint_names.yaml
-           controller_joint_names: [joint_1, joint_2, ... joint_N] 
-       - Update with joint names for your robot (in order expected by rbt controller)
-       - and uncomment the following line: -->
   <rosparam command="load" file="$(find fanuc_lrmate200id_support)/config/joint_names_lrmate200id.yaml" />
  
   <!-- the "sim" argument controls whether we connect to a Simulated or Real robot -->
@@ -30,9 +22,6 @@
     <include file="$(find industrial_robot_simulator)/launch/robot_interface_simulator.launch" />
   </group>
 
-  <!-- run the "real robot" interface nodes -->
-  <!--   - this typically includes: robot_state, motion_interface, and joint_trajectory_action nodes -->
-  <!--   - replace these calls with appropriate robot-specific calls or launch files -->
   <group unless="$(arg sim)">
     <include file="$(find fanuc_lrmate200id_support)/launch/robot_interface_streaming_lrmate200id.launch" >
       <arg name="robot_ip" value="$(arg robot_ip)"/>
@@ -56,26 +45,14 @@
     <arg name="moveit_warehouse_database_path" value="$(arg db_path)"/>
   </include>
 
-  <!--  realsense2_camera rs_camera.launch-->
+  <include file="$(find realsense2_camera)/launch/rs_camera.launch">  </include>
 
-<!--  <include file="$(find realsense2_camera)/launch/rs_camera.launch">-->
-<!--  </include>-->
-<!--  <arg name="ply_path" type="abc" default="$(find fanuc_lrmate200id_support)/objects_for_cv/complexPart.ply" />-->
-<!--  <arg name="$(find fanuc_lrmate200id_support)/launch/load_lrmate200id.launch" />-->
-<!--  args="$(arg ply_path)"-->
   <node pkg="ur5_control" type="CV_node" name="CV_RealSense" output="screen"  >
     <param name="ply_path" type="string" value="$(find fanuc_lrmate200id_support)/objects_for_cv/complexPart.ply"/>
   </node>
 
-<!--  /media/viktor/Shared Space/FanucRobocell/clion workspace/src/fanuc_experimental/realsense-ros/realsense2_camera/launch/rs_camera.launch-->
-<!--next node executes motion pipeline   -->
-
-
-<!--  <arg name="node_start_delay" default="3.0" />-->
-<!--  <arg name="robot_name" default="ur5" />-->
-<!--  <node pkg="ur5_control" type="IK_test_node" name="IK_by_trac_IK" output="screen">-->
-<!--&lt;!&ndash;  <node pkg="ur5_control" type="IK_test_node" name="IK_by_trac_IK" output="screen" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' ">&ndash;&gt;-->
-<!--&lt;!&ndash;        <param name="tf_prefix" type="string" value="$(arg robot_name)" />&ndash;&gt;-->
-<!--  </node>-->
+  <node pkg="ur5_control" type="IK_test_node" name="IK_by_trac_IK" output="screen">
+    <param name="stl_path" type="string" value="$(find fanuc_lrmate200id_support)/objects_for_cv/demo_part.stl"/>
+  </node>
 
 </launch>
