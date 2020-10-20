@@ -21,7 +21,6 @@ find_package(PCL 1.8 REQUIRED)
 find_package(realsense2 REQUIRED)
 
 catkin_package(
-  #INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS
 	tf
