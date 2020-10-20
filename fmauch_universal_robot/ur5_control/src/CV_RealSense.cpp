@@ -243,7 +243,7 @@ tf::StampedTransform FromEigenToStpTrans(Eigen::Matrix4d to_convert)
    static tf::TransformBroadcaster br;
 
    // Create a ROS publisher for the output point cloud
-   //pub = nh.advertise<pcl::PCLPointCloud2> ("output", 1);
+
    ros::Subscriber sub = nh.subscribe<sensor_msgs::PointCloud2>("/camera/depth/color/points",10, cloud_get);
 	 PointCloudT::Ptr scene_rviz (new PointCloudT);
 
@@ -258,15 +258,14 @@ tf::StampedTransform FromEigenToStpTrans(Eigen::Matrix4d to_convert)
 	 FeatureCloudT::Ptr scene_features (new FeatureCloudT);
 
 	 // Get input object and scene
-	 if (argc != 3)
+	 if (argc != 2)
 	 {
 		 pcl::console::print_error ("Syntax is: %s object.pcd scene.pcd\n", argv[0]);
 		 return (1);
 	 }
 	 // Load object and scene
 	 pcl::console::print_highlight ("Loading point clouds...\n");
-	 if (pcl::io::loadPLYFile<PointNT> (argv[1], *object) < 0 ||
-		 pcl::io::loadPLYFile<PointNT> (argv[2], *scene1) < 0)
+	 if (pcl::io::loadPLYFile<PointNT> (argv[1], *object) < 0 )
 	 {
 		 pcl::console::print_error ("Error loading object/scene file!\n");
 		 return (1);
@@ -289,7 +288,7 @@ tf::StampedTransform FromEigenToStpTrans(Eigen::Matrix4d to_convert)
 		 obj_trans.child_frame_id_ = "object_pose";
 		 br.sendTransform(obj_trans);
 		 // Spin
-		 //ros::spin();
+
 		 ros::spinOnce();
 		 loop_rate.sleep();
 	 }
