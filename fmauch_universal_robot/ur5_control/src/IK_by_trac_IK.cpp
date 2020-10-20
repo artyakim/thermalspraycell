@@ -60,7 +60,7 @@ std::vector<geometry_msgs::Pose> createWaypoints (geometry_msgs::Pose primitive,
 {
     tf::Transform rot_tcp;
     double radius = 0.005;
-    double offset = 0.1;
+    double offset = 0.15;
     double delta = 0.001;
     double n = ceil(dim_b/(2*((2*radius)-delta)));
     double r,p,y;
@@ -170,7 +170,7 @@ std::vector<geometry_msgs::Pose> Interpolate (geometry_msgs::Pose n, geometry_ms
 	std::vector<geometry_msgs::Pose> InterWayPoints;
 	InterWayPoints.clear();
 	//step size is 1mm;
-	float delta = 0.01;
+	float delta = 0.005;
 	float d_x = m.position.x - n.position.x;
 	float d_y = m.position.y - n.position.y;
 	float d_z = m.position.z - n.position.z;
@@ -219,7 +219,12 @@ int main(int argc, char **argv) {
 	tf::TransformListener listener_for_tf;
 	tf::Vector3 vec(0,0,0);
 	object_transform.setOrigin(vec);
-	if(listener_for_tf.waitForTransform("base_link","object_pose", ros::Time(), ros::Duration(5.0)))
+
+	if (n.ok()) {
+
+		ROS_INFO("Waiting for transform....");
+	}
+	if(listener_for_tf.waitForTransform("base_link","object_pose", ros::Time(), ros::Duration(10.0)))
 	{
 		listener_for_tf.lookupTransform("base_link", "object_pose", ros::Time(0), object_transform);
 		ros::spinOnce();
@@ -297,16 +302,16 @@ int main(int argc, char **argv) {
 
     box_tf.setRotation(object_transform.getRotation());
     box_tf.setOrigin(object_transform.getOrigin());
-    tf::Quaternion q;
-    q.setX(0.373491);
-    q.setY(0.615548);
-    q.setZ(0.603583);
-    q.setW(0.342479);
-    box_tf.setRotation(q);
-    box_tf.getBasis().setRPY(1.57,0,1.57); /// commented
-    box_tf.getOrigin().setX(0.4737);
-    box_tf.getOrigin().setY(-0.196672);
-    box_tf.getOrigin().setZ(0.00273011);
+//    tf::Quaternion q;
+//    q.setX(0.373491);
+//    q.setY(0.615548);
+//    q.setZ(0.603583);
+//    q.setW(0.342479);
+//    box_tf.setRotation(q);
+//    box_tf.getBasis().setRPY(1.57,0,1.57); /// commented
+//    box_tf.getOrigin().setX(0.4737);
+//    box_tf.getOrigin().setY(-0.196672);
+//    box_tf.getOrigin().setZ(0.00273011);
 //    addPrimitiveBox (planning_scene_interface,
 //                          group,
 //                          "box1",
@@ -337,24 +342,6 @@ int main(int argc, char **argv) {
 //    planning_scene_interface.addCollisionObjects(collision_objects);
     visual_tools.publishText(text_pose, "Add object", rvt::WHITE, rvt::XLARGE);
     visual_tools.trigger();
-
-//    tf::Vector3 wall_back;
-//    wall_back.setX(0.01);
-//    wall_back.setY(2);
-//    wall_back.setZ(2);
-//    tf::Transform wallback_tf;
-//    wallback_tf.getBasis().setRPY(1.57,0.0,0.0);
-//    wallback_tf.getOrigin().setX(-0.5);
-//    wallback_tf.getOrigin().setY(0.0);
-//    wallback_tf.getOrigin().setZ(1);
-//    addPrimitiveBox (planning_scene_interface,
-//                     group,
-//                     "wallback",
-//                     wall_back,
-//                     wallback_tf);
-//    visual_tools.publishText(text_pose, "Add object", rvt::WHITE, rvt::XLARGE);
-//    visual_tools.trigger();
-
 
 
     visual_tools.prompt("Press NEXT to get the ENVIRONMENT");
@@ -437,13 +424,6 @@ int main(int argc, char **argv) {
     joint_group_positions[3]=5*DEG_TO_RAD;
     joint_group_positions[4]=5*DEG_TO_RAD;
     joint_group_positions[5]=5*DEG_TO_RAD;
-
-//    joint_group_positions[0]= 0;
-//    joint_group_positions[1]= -90*DEG_TO_RAD;
-//    joint_group_positions[2]= 0*DEG_TO_RAD;
-//    joint_group_positions[3]= 0*DEG_TO_RAD;
-//    joint_group_positions[4]= 0*DEG_TO_RAD;
-//    joint_group_positions[5]= 90*DEG_TO_RAD;
 
     group.setJointValueTarget(joint_group_positions);
     bool success = (group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
@@ -589,21 +569,36 @@ int main(int argc, char **argv) {
     visual_tools.prompt("PRESS NEXT TO EXECUTE TRAJ");
     group.execute(my_plan);
 
+	visual_tools.prompt("Press NEXT to plan to HOME position");
+
+	joint_group_positions[0]=5*DEG_TO_RAD;
+	joint_group_positions[1]=5*DEG_TO_RAD;
+	joint_group_positions[2]=5*DEG_TO_RAD;
+	joint_group_positions[3]=5*DEG_TO_RAD;
+	joint_group_positions[4]=5*DEG_TO_RAD;
+	joint_group_positions[5]=5*DEG_TO_RAD;
+
+	group.setJointValueTarget(joint_group_positions);
+	success = (group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+	ROS_INFO_NAMED("tutorial", "Visualizing plan 2 (joint space goal) %s", success ? "" : "FAILED");
+	visual_tools.prompt("Press NEXT to MOVE to HOME position");
+	group.move();
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    visual_tools.trigger();
-    visual_tools.prompt("Press NEXT to attach object to robot");
-
-    ROS_INFO_NAMED("tutorial", "Attach the object to the robot");
-    group.attachObject(collision_object.id);
-    visual_tools.publishText(text_pose, "Object attached to robot", rvt::WHITE, rvt::XLARGE);
-    visual_tools.trigger();
-    visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to once the collision object attaches to the "
-                        "robot");
-    ROS_INFO_NAMED("tutorial", "Detach the object from the robot");
-    group.detachObject(collision_object.id);
-    visual_tools.publishText(text_pose, "Object dettached from robot", rvt::WHITE, rvt::XLARGE);
-    visual_tools.trigger();
+//    visual_tools.trigger();
+//    visual_tools.prompt("Press NEXT to attach object to robot");
+//
+//    ROS_INFO_NAMED("tutorial", "Attach the object to the robot");
+//    group.attachObject(collision_object.id);
+//    visual_tools.publishText(text_pose, "Object attached to robot", rvt::WHITE, rvt::XLARGE);
+//    visual_tools.trigger();
+//    visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to once the collision object attaches to the "
+//                        "robot");
+//    ROS_INFO_NAMED("tutorial", "Detach the object from the robot");
+//    group.detachObject(collision_object.id);
+//    visual_tools.publishText(text_pose, "Object dettached from robot", rvt::WHITE, rvt::XLARGE);
+//    visual_tools.trigger();
 
 /* Wait for MoveGroup to recieve and process the attached collision object message */
     visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to once the collision object detaches to the "
@@ -623,4 +618,3 @@ int main(int argc, char **argv) {
     ros::shutdown();
     return 0;
 }
-
