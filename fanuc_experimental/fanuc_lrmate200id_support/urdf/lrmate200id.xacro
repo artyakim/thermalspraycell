@@ -4,7 +4,7 @@
     <xacro:fanuc_lrmate200id prefix=""/>
     <xacro:include filename="$(find realsense2_description)/urdf/_d435.urdf.xacro"/>
     <xacro:sensor_d435 parent="base_link">
-        <origin xyz="0.15 0.0 0.1" rpy="0 0 0"/>
+        <origin xyz="0.12503 0.0 0.1197" rpy="0 0 0"/>
     </xacro:sensor_d435>
     <xacro:include filename="$(find fanuc_lrmate200id_support)/urdf/igla_tool.xacro"/>
     <xacro:igla_tool prefix="" connected_to=""/>
