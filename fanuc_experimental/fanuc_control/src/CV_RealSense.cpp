@@ -159,10 +159,10 @@ Eigen::Matrix4d PCAlignment(PointCloudT::Ptr scene_rviz, PointCloudT::Ptr object
         pcl::console::print_info("Inliers Fraction: %i/%i\n", align.getInlierFraction(), object->size());
 
         //Show alignment
-        pcl::visualization::PCLVisualizer visu("Alignment");
-        visu.addPointCloud(scene, ColorHandlerT(scene, 0.0, 255.0, 255.0), "scene");
-        visu.addPointCloud(object_aligned, ColorHandlerT(object_aligned, 255.0, 255.0, 0.0), "object_aligned");
-        visu.spin();
+//        pcl::visualization::PCLVisualizer visu("Alignment");
+//        visu.addPointCloud(scene, ColorHandlerT(scene, 0.0, 255.0, 255.0), "scene");
+//        visu.addPointCloud(object_aligned, ColorHandlerT(object_aligned, 255.0, 255.0, 0.0), "object_aligned");
+//        visu.spin();
     } else {
         pcl::console::print_error("Alignment RANSAC failed!\n");
         return error.setZero();
